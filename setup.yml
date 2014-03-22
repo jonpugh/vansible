@@ -1,0 +1,108 @@
+##
+# Attempt at a common set of core tags for php web development.
+#
+
+---
+- hosts: all
+  user: root
+
+  vars_files:
+    - settings.yml
+
+  tasks:
+    ##
+    # Apt package installation of required software.
+    #
+    - name: Packages | Install required packages.
+      action: apt pkg={{ item }} state=installed
+      tags: common
+      with_items:
+        - php5
+        - apache2
+        - mysql-server
+        - mysql-client
+        - php5-mysql
+        - php-apc
+        - php5-xmlrpc
+        - php5-curl
+        - php5-gd
+        - sendmail
+        - unzip
+        - python-mysqldb
+
+    ##
+    # Message of the day explaining server is under control of Ansible.
+    #
+    - name: General | Setting message of the day.
+      action: copy src=files/motd dest=/etc/update-motd.d/95-ansible mode=755
+      tags: common
+
+    ##
+    # PHP Setup.
+    #
+    - name: PHP | Configuration file, php.ini
+      action: template src=templates/etc-php5-apache2-php-ini.j2 dest=/etc/php5/apache2/php.ini
+      tags: common
+
+    - name: APC | Cache configuration file, apc.ini
+      action: template src=templates/etc-php5-conf-d-apc-ini.j2 dest=/etc/php5/conf.d/apc.ini
+      tags: common
+
+    ##
+    # MySQL database setup.
+    #
+    - name: MySQL | Configuration file, my.cnf
+      action: template src=templates/etc-mysql-my-cnf.j2 dest=/etc/mysql/my.cnf
+      tags: common
+
+    - include: ./tasks/mysql-secure.yml
+
+    ##
+    # Apache2 setup.
+    #
+    - name: Apache | Enable some required modules
+      action: command a2enmod rewrite vhost_alias
+      tags: common
+
+    - name: Apache | Configuration file for our site
+      action: template src=templates/etc-apache2-sites-available-devserver.j2 dest=/etc/apache2/sites-available/devserver
+      tags: common
+
+    - name: Apache | Disable the default site
+      action: command a2dissite default
+      tags: common
+
+    - name: Apache | Enable our new site
+      action: command a2ensite devserver
+      tags: common
+
+    ##
+    # Drush install, a Drupal shell tool.
+    #
+    - include: tasks/ubuntu-drush.yml
+
+    ##
+    # Save authorized key from Vagrant Host's id_rsa.pub: @TODO: The key file must not have extra whitespace!
+    #
+    - authorized_key: user=vagrant key="{{ authorized_keys }}"
+      tags: common
+
+    # Copy host machines SSH keys to guest
+    - name: SSH Keys | Copy private key from Host to Guest
+      copy: src=/home/vagrant/.ssh_host/id_rsa dest=/home/vagrant/.ssh/id_rsa owner=vagrant group=vagrant mode=0600
+      tags: common
+
+    - name: SSH Keys | Copy public key from Host to Guest
+      copy: src=/home/vagrant/.ssh_host/id_rsa.pub dest=/home/vagrant/.ssh/id_rsa.pub owner=vagrant group=vagrant mode=0600
+      tags: common
+
+    ##
+    # Restart services
+    #
+    - name: Restart Apache
+      action: service name=apache2 state=restarted
+      tags: common
+
+    - name: Restart MySQL
+      action: service name=mysql state=restarted
+      tags: common

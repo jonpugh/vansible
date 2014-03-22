@@ -1,5 +1,7 @@
 # Settings that are applied to the templates and used in scripts. 
 
+
+
 ---
 # Hostname is important as we need to delete an anonymous MySQL
 # user that is created with this name, make sure you match this

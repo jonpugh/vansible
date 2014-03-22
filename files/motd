@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo
+echo " ========================================================"
+echo "  Welcome to a vansible-provisioned server. More to come."
+echo " ========================================================"
+echo
