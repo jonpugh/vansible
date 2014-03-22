@@ -34,7 +34,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Setup ansible and run the playbook.
   # @TODO: Remove once vagrant supports ansible on guest.
-  config.vm.provision "shell", path: "scripts/ansible-setup.sh"
+  config.vm.provision "shell", path: "setup-ansible.sh"
+  
+  # @TODO: Read tags from settings.yml, or local.yml or something. trying to make this extensible.
   config.vm.provision "shell",
       inline: "cd /vagrant; ansible-playbook -c local  -i 'localhost,' --tags='common,drush' setup.yml  --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
