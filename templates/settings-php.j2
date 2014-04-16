@@ -1,10 +1,12 @@
 <?php
+include('../default/settings.php');
 $databases['default']['default'] = array(
     'driver' => 'mysql',
-    'database' => 'engageny2',
-    'username' => 'engageny2',
-    'password' => 'engageny2',
+    'database' => '{{ project }}',
+    'username' => '{{ project }}',
+    'password' => '{{ project }}',
     'host' => 'localhost',
     'prefix' => '',
     'collation' => 'utf8_general_ci',
 );
+

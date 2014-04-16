@@ -107,3 +107,22 @@
     - name: Restart MySQL
       action: service name=mysql state=restarted
       tags: common
+
+    ##
+    # Final Drupal Configuraiton
+    #
+    - name: Create database user
+      action: mysql_user user={{ project }} password={{ project }} priv=*.*:ALL,GRANT state=present
+      tags: common
+
+    - name: Create database
+      action: mysql_db db={{ project }} state=present
+      tags: common
+
+    - name: Drupal | Configuration folder, sites/{{ server_hostname }}
+      action: file path=/var/www/sites/{{ server_hostname }} state=directory
+      tags: common
+
+    - name: Drupal | Configuration file, settings.php
+      action: template src=templates/settings-php.j2 dest=/var/www/sites/{{ server_hostname }}/settings.php
+      tags: common
