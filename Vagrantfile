@@ -58,8 +58,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder "engageny2/docroot", "/var/www",
     owner: "www-data", group: "www-data"
 
-  # Sync .drush folder to guest machine.
-  config.vm.synced_folder "#{Dir.home}/.drush", "/home/vagrant/.drush",
-      owner: "vagrant", group: "vagrant"
-
 end
