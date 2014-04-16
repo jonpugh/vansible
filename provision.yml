@@ -33,6 +33,11 @@
         - vim
 
     ##
+    # Set Hostname
+    #
+    - hostname: name={{ server_hostname }}
+
+    ##
     # Message of the day explaining server is under control of Ansible.
     #
     - name: General | Setting message of the day.
