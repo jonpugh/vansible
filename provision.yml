@@ -30,6 +30,7 @@
         - sendmail
         - unzip
         - python-mysqldb
+        - vim
 
     ##
     # Message of the day explaining server is under control of Ansible.
