@@ -7,6 +7,7 @@
   user: root
 
   vars_files:
+    - settings.default.yml
     - settings.yml
 
   tasks:
@@ -34,7 +35,7 @@
     # Message of the day explaining server is under control of Ansible.
     #
     - name: General | Setting message of the day.
-      action: copy src=files/motd dest=/etc/update-motd.d/95-ansible mode=755
+      action: template src=templates/motd.j2 dest=/etc/update-motd.d/95-ansible mode=755
       tags: common
 
     ##
@@ -82,7 +83,7 @@
     - include: tasks/ubuntu-drush.yml
 
     ##
-    # Save authorized key from Vagrant Host's id_rsa.pub: @TODO: The key file must not have extra whitespace!
+    # Save authorized key from Vagrant Host's id_rsa.pub:
     #
     - authorized_key: user=vagrant key="{{ authorized_keys }}"
       tags: common
