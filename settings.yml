@@ -4,3 +4,4 @@
 
 ---
 project: 'engageny2'
+server_hostname: 'content-local.engageny.org'
