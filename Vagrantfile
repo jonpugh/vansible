@@ -7,29 +7,45 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "hashicorp/precise64"
+  # Look for project settings file.
+  if !(File.exists?("settings.project.yml"))
+    raise NoSettingsException
+  end
 
-  # @TODO: Get these from settings.yml
-  config.vm.hostname = "localhost"
+  # Load the yml files
+  require 'yaml'
+  settings = YAML.load_file('settings.project.yml')
+
+  # Clone project if not found
+  if !(File.directory?("src"))
+    system("git clone #{settings['project_repo']} src")
+
+    if !(File.directory?("src"))
+      raise NoSrcException
+    end
+  end
+
+  # Config the VM
+  config.vm.box = "hashicorp/precise64"
+  config.vm.hostname = settings['server_hostname']
+
+  # @TODO: Put these in settings.global.yml, merge into settings hash, and use here.
   VANSIBLE_TAGS = "common,drush"
   VANSIBLE_IP = "10.10.10.10"
-  VANSIBLE_PORT = "8080"
   VANSIBLE_PLAYBOOK = "provision.yml"
   VANSIBLE_MEMORY = "2048"
 
   # Sets IP of the guest machine and allows it to connect to the internet.
-  # @TODO: Get this from settings.yml
-  # config.vm.network :private_network, ip: VANSIBLE_IP
+  # @TODO: Add the adapter to settings.global.yml. Almost always wlan0
+  config.vm.network :private_network, ip: VANSIBLE_IP
   config.vm.network :public_network
-  config.vm.network :forwarded_port, guest: 80, host: VANSIBLE_PORT
 
   # Sync .ssh folder to guest machine.
   config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"
 
   # Read hosts public ssh key to pass to ansible.
   if !(File.exists?("#{Dir.home}/.ssh/id_rsa.pub"))
-      warn "We could not find your SSH public key at ~/.ssh/id_rsa.pub. Please generate a key there and try again."
-      exit
+     raise NoSshKeyException
   end
   ssh_public_key = IO.read("#{Dir.home}/.ssh/id_rsa.pub").strip!
   
@@ -45,17 +61,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # @TODO: Remove once vagrant supports ansible on guest.
   config.vm.provision "shell", path: "tasks/setup-ansible.sh"
   
-  # @TODO: Read tags from settings.yml, or local.yml or something. trying to make this extensible.
-  # @TODO: Get "tags" from settings.yml
+  # Run ansible Provisioner via shell.
   config.vm.provision "shell",
-      inline: "cd /vagrant; ansible-playbook -c local  -i 'localhost,' --tags='#{VANSIBLE_TAGS}' provision.yml  --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
+      inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{VANSIBLE_TAGS}' #{VANSIBLE_PLAYBOOK} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", VANSIBLE_MEMORY]
   end
 
   # Sync project folder to guest machine.
-  config.vm.synced_folder "engageny2/docroot", "/var/www",
+  config.vm.synced_folder "src/#{settings['path_to_drupal']}", "/var/www",
     owner: "www-data", group: "www-data"
 
+end
+
+##
+# Our Exceptions
+#
+class NoSettingsException < Vagrant::Errors::VagrantError
+  error_message('Project settings file not found. Copy settings.project.example.yml to settings.project.yml, edit to match your project, then try again.')
+end
+
+class NoSrcException < Vagrant::Errors::VagrantError
+  error_message('Project source does not exist.  Clone your project to ./src .')
+end
+
+class NoSshKeyException < Vagrant::Errors::VagrantError
+  error_message('An ssh public key could not be found at ~/.ssh/id_rsa.pub. Please generate one and try again.')
 end
