@@ -134,6 +134,10 @@
       action: template src=templates/settings-php.j2 dest=/var/www/sites/{{ server_hostname }}/settings.php
       tags: common
 
+    - name: Drush | Create site alias
+      action: template src=templates/alias-drushrc-php.j2 dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
+      tags: common
+
     ###
     # @TODO: Create a server wide site alias.
 
