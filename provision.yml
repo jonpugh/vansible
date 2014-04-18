@@ -135,7 +135,7 @@
       tags: common
 
     - name: Drush | Create site alias
-      action: template src=templates/alias-drushrc-php.j2 dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
+      action: template src=templates/drush-alias-drushrc-php.j2 dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
       tags: common
 
     ###
