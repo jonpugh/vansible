@@ -43,7 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Sync .ssh folder to guest machine.
   config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"
 
-  # Read hosts public ssh key to pass to ansible.
+  # Read this user's host machine's public ssh key to pass to ansible.
   if !(File.exists?("#{Dir.home}/.ssh/id_rsa.pub"))
      raise NoSshKeyException
   end
@@ -72,6 +72,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Sync project folder to guest machine.
   config.vm.synced_folder "src/#{settings['path_to_drupal']}", "/var/www",
     owner: "www-data", group: "www-data"
+
+  # Save a local alias for this project.
+  DRUSH_ALIAS_FILE = "#{Dir.home}/.drush/#{settings['project']}.alias.drushrc.php"
+  if (!File.exists?(DRUSH_ALIAS_FILE))
+    drush_alias = "
+  <?php
+  $aliases['#{settings['project']}'] = array(
+    'uri' => '#{settings['server_hostname']}',
+    'root' => '/var/www',
+    'remote-host' => '#{settings['server_hostname']}',
+    'remote-user' => 'vagrant',
+  );
+    "
+    if (File.write("#{Dir.home}/.drush/#{settings['project']}.alias.drushrc.php", drush_alias))
+      # @TODO: Replace with Vagrant::UI::Basic once we know how to use it :(
+      puts "Drush alias created. You may access your site with `drush @#{settings['project']}`"
+    end
+  end
 
 end
 
