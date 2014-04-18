@@ -76,7 +76,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Save a local alias for this project.
   DRUSH_ALIAS_FILE = "#{Dir.home}/.drush/#{settings['project']}.alias.drushrc.php"
   if (!File.exists?(DRUSH_ALIAS_FILE))
-    // @TODO: Is is possible to load this from the ansible template?
+    # @TODO: Is is possible to load this from the ansible template?
     drush_alias = "
   <?php
   $aliases['#{settings['project']}'] = array(
