@@ -7,8 +7,8 @@
   user: root
 
   vars_files:
-    - settings.default.yml
-    - settings.yml
+    - settings.global.yml
+    - settings.project.yml
 
   tasks:
     ##
@@ -133,3 +133,17 @@
     - name: Drupal | Configuration file, settings.php
       action: template src=templates/settings-php.j2 dest=/var/www/sites/{{ server_hostname }}/settings.php
       tags: common
+
+    ###
+    # @TODO: Create a server wide site alias.
+
+    ##
+    # Install Drupal based on chosen profile
+    # @TODO: This doesn't work.  Fails with ERROR: chdir is not a legal parameter in an Ansible task or handler, which
+    #   is in direct opposition to the documentation.
+
+#    - name: Drupal | Installation
+#      shell: drush site-install {{ install_profile }}
+#      chdir: /var/www/sites/{{ server_hostname }}
+#      creates: /var/site-installed
+#      tags: common
