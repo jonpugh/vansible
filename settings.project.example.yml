@@ -1,7 +1,19 @@
+##
 # Settings for this project.
+#
 
-
+##
+# This file must be copied to settings.project.yml.
+# You can use this file to override any other settings in settings.global.yml
+#
 
 ---
-project: 'engageny2'
-server_hostname: 'content-local.engageny.org'
+project: drupal
+project_repo: git@github.com:thinkdrop/drupal-flat.git
+server_hostname: drupal
+
+# If your project is from Acquia, path_to_drupal would be "docroot"
+path_to_drupal: .
+
+# An example of an overridden setting. Uncomment to override the defaults in settings.global.yml
+# php_memory_limit: '512M'
