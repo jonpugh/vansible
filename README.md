@@ -3,8 +3,7 @@ vansible
 
 Vagrant + Ansible
 
-This repo is for experimentation with vagrant and ansible.
-
+This repo is for experimentation with vagrant and ansible.  I don't know where this is going, but it's going somewhere, as it works really well.
 
 Goals
 -----
