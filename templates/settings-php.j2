@@ -1,6 +1,9 @@
 <?php
 
-include_once('./sites/default/global.settings.php');
+// Load a global settings file if there is one.
+if (file_exists('./sites/default/global.settings.php')) {
+  include_once('./sites/default/global.settings.php');
+}
 
 $databases['default']['default'] = array(
     'driver' => 'mysql',
