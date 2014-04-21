@@ -31,7 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # @TODO: Put these in settings.global.yml, merge into settings hash, and use here.
   VANSIBLE_TAGS = "common,drush"
-  VANSIBLE_IP = "10.10.10.10"
+  VANSIBLE_IP = settings['ip']
   VANSIBLE_PLAYBOOK = "provision.yml"
   VANSIBLE_MEMORY = "2048"
 
