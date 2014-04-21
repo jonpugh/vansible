@@ -69,13 +69,9 @@ To start a new project:
 
     You can access the site with drush from your computer (the host) using the alias `@projectname`.
 
-    To install your site with drush:
+    Currently you must use the web-based installer because the sites/projectname folder is owned by www-data, so visit http://projectname/install.php in a web browser.
 
-    ```
-    $ drush @projectname site-install
-    ```
-
-    To install your site with the web-based installer, visit http://projectname/install.php in a web browser.
+    Alternately you can import a db manually with drush sql-sync, sqlc, etc.
 
 5. Develop!
 
