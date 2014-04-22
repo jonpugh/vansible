@@ -16,9 +16,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   require 'yaml'
   settings = YAML.load_file('settings.project.yml')
 
-  # Clone project if not found
+  # Clone project repo to `./src` if the folder doesn't exist yet, and the setting exists.
   if !(File.directory?("src"))
-    system("git clone #{settings['project_repo']} src")
+
+    # If a project_repo is set, clone it.
+    if settings['project_repo']
+      system("git clone #{settings['project_repo']} src")
+    # otherwise, create the src directory so we can share it to the guest.
+    else
+      system("mkdir src");
+    end
 
     if !(File.directory?("src"))
       raise NoSrcException
@@ -102,7 +109,7 @@ class NoSettingsException < Vagrant::Errors::VagrantError
 end
 
 class NoSrcException < Vagrant::Errors::VagrantError
-  error_message('Project source does not exist.  Clone your project to ./src .')
+  error_message('Could not create ./src folder. Run as the owner of this folder. ')
 end
 
 class NoSshKeyException < Vagrant::Errors::VagrantError

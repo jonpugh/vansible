@@ -9,7 +9,7 @@
 
 ---
 project: drupal
-project_repo: git@github.com:thinkdrop/drupal-flat.git
+#project_repo: git@github.com:thinkdrop/drupal-flat.git
 install_profile: minimal
 server_hostname: drupal
 
