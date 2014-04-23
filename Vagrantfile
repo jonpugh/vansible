@@ -14,11 +14,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Load the yml files
   require 'yaml'
-  settings = YAML.load_file('settings.project.yml')
+  settings = YAML.load_file('settings.global.yml')
+  settings.merge!(YAML.load_file('settings.project.yml'))
 
-  # Clone project if not found
+  # Clone project repo to `./src` if the folder doesn't exist yet, and the setting exists.
   if !(File.directory?("src"))
-    system("git clone #{settings['project_repo']} src")
+
+    # If a project_repo is set, clone it.
+    if settings['project_repo']
+      system("git clone #{settings['project_repo']} src")
+    # otherwise, create the src directory so we can share it to the guest.
+    else
+      system("mkdir src");
+    end
 
     if !(File.directory?("src"))
       raise NoSrcException
@@ -29,16 +37,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise64"
   config.vm.hostname = settings['server_hostname']
 
-  # @TODO: Put these in settings.global.yml, merge into settings hash, and use here.
-  VANSIBLE_TAGS = "common,drush"
-  VANSIBLE_IP = settings['ip']
-  VANSIBLE_PLAYBOOK = "provision.yml"
-  VANSIBLE_MEMORY = "2048"
-
   # Sets IP of the guest machine and allows it to connect to the internet.
   # @TODO: Add the adapter to settings.global.yml. Almost always wlan0
-  config.vm.network :private_network, ip: VANSIBLE_IP
-  config.vm.network :public_network
+  config.vm.network :private_network, ip:  settings['vansible_ip']
+  config.vm.network :public_network, bridge: settings['vansible_adapter']
 
   # Sync .ssh folder to guest machine.
   config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"
@@ -53,8 +55,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # See https://github.com/mitchellh/vagrant/issues/2103
   # @TODO: Uncomment once vagrant supports this.
   # config.vm.provision "ansible" do |ansible|
-  #   ansible.playbook = VANSIBLE_PLAYBOOK
-  #   ansible.tags = VANSIBLE_TAGS
+  #   ansible.playbook = settings['vansible_playbook']
+  #   ansible.tags = settings['vansible_tags']
   # end
 
   # Setup ansible and run the playbook.
@@ -63,10 +65,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Run ansible Provisioner via shell.
   config.vm.provision "shell",
-      inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{VANSIBLE_TAGS}' #{VANSIBLE_PLAYBOOK} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
+      inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{settings['vansible_tags']}' #{settings['vansible_playbook']} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", VANSIBLE_MEMORY]
+    vb.customize ["modifyvm", :id, "--memory", settings['vansible_memory']]
   end
 
   # Sync project folder to guest machine.
@@ -102,7 +104,7 @@ class NoSettingsException < Vagrant::Errors::VagrantError
 end
 
 class NoSrcException < Vagrant::Errors::VagrantError
-  error_message('Project source does not exist.  Clone your project to ./src .')
+  error_message('Could not create ./src folder. Run as the owner of this folder. ')
 end
 
 class NoSshKeyException < Vagrant::Errors::VagrantError

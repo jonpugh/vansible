@@ -76,3 +76,10 @@ To start a new project:
 5. Develop!
 
     Edit the code in the ./src folder of this repo to work on your drupal site.
+
+@TODO
+-----
+
+1. Accept input during `vagrant up` to write settings.project.yml file automatically. 
+2. Setup "remote master" alias to setup automatic syncing. (look at drush fetch).
+3. ...
