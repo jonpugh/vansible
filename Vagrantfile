@@ -14,7 +14,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Load the yml files
   require 'yaml'
-  settings = YAML.load_file('settings.project.yml')
+  settings = YAML.load_file('settings.global.yml')
+  settings.merge!(YAML.load_file('settings.project.yml'))
 
   # Clone project repo to `./src` if the folder doesn't exist yet, and the setting exists.
   if !(File.directory?("src"))
