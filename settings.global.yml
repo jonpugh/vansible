@@ -8,6 +8,7 @@ vansible_tags: 'common,drush'
 vansible_ip: '10.10.10.10'
 vansible_playbook: 'provision.yml'
 vansible_memory: '2048'
+vansible_adapter: 'wlan0'
 
 # Hostname is important as we need to delete an anonymous MySQL
 # user that is created with this name, make sure you match this
