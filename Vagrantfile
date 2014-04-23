@@ -67,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{settings['vansible_tags']}' #{settings['vansible_playbook']} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", VANSIBLE_MEMORY]
+    vb.customize ["modifyvm", :id, "--memory", settings['vansible_memory']]
   end
 
   # Sync project folder to guest machine.
