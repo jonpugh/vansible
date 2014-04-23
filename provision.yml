@@ -134,6 +134,10 @@
       action: template src=templates/settings-php.j2 dest=/var/www/sites/{{ server_hostname }}/settings.php
       tags: common
 
+    - name: Drush | Create .drush folder
+      tags: common
+      action: file path=/home/vagrant/.drush owner=vagrant group=vagrant state=directory
+
     - name: Drush | Create site alias
       action: template src=templates/drush-alias-drushrc-php.j2 dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
       tags: common
