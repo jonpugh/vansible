@@ -55,7 +55,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.provision "ansible" do |ansible|
      ansible.playbook = settings['vansible_playbook']
      ansible.tags = settings['vansible_tags']
-     ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
+     ansible.extra_vars = {
+       ansible_ssh_user: 'vagrant',
+       authorized_keys: ssh_public_key
+     }
      ansible.sudo = true
    end
 
