@@ -1,9 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
-
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -54,18 +52,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # ONLY WORKS if ansible is setup on the HOST machine.
   # See https://github.com/mitchellh/vagrant/issues/2103
   # @TODO: Uncomment once vagrant supports this.
-  # config.vm.provision "ansible" do |ansible|
-  #   ansible.playbook = settings['vansible_playbook']
-  #   ansible.tags = settings['vansible_tags']
-  # end
+   config.vm.provision "ansible" do |ansible|
+     ansible.playbook = settings['vansible_playbook']
+     ansible.tags = settings['vansible_tags']
+     ansible.extra_vars = { ansible_ssh_user: 'vagrant' }
+     ansible.sudo = true
+   end
 
   # Setup ansible and run the playbook.
   # @TODO: Remove once vagrant supports ansible on guest.
-  config.vm.provision "shell", path: "tasks/setup-ansible.sh"
-  
+  # config.vm.provision "shell", path: "tasks/setup-ansible.sh"
+
   # Run ansible Provisioner via shell.
-  config.vm.provision "shell",
-      inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{settings['vansible_tags']}' #{settings['vansible_playbook']} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
+  #config.vm.provision "shell",
+  #    inline: "cd /vagrant; ansible-playbook -c local  -i '#{settings['server_hostname']},' --tags='#{settings['vansible_tags']}' #{settings['vansible_playbook']} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", settings['vansible_memory']]
