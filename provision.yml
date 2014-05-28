@@ -92,17 +92,18 @@
     ##
     # Save authorized key from Vagrant Host's id_rsa.pub:
     #
-    - authorized_key: user=vagrant key="{{ authorized_keys }}"
+    - name: SSH Keys | Save authorized_keys
+      authorized_key: user=vagrant key="{{ authorized_keys }}"
       tags: common
 
     # Copy host machines SSH keys to guest
-    - name: SSH Keys | Copy private key from Host to Guest
-      copy: src=/home/vagrant/.ssh_host/id_rsa dest=/home/vagrant/.ssh/id_rsa owner=vagrant group=vagrant mode=0600
-      tags: common
-
-    - name: SSH Keys | Copy public key from Host to Guest
-      copy: src=/home/vagrant/.ssh_host/id_rsa.pub dest=/home/vagrant/.ssh/id_rsa.pub owner=vagrant group=vagrant mode=0600
-      tags: common
+#    - name: SSH Keys | Copy private key from Host to Guest
+#      copy: src=/home/vagrant/.ssh_host/id_rsa dest=/home/vagrant/.ssh/id_rsa owner=vagrant group=vagrant mode=0600
+#      tags: common
+#
+#    - name: SSH Keys | Copy public key from Host to Guest
+#      copy: src=/home/vagrant/.ssh_host/id_rsa.pub dest=/home/vagrant/.ssh/id_rsa.pub owner=vagrant group=vagrant mode=0600
+#      tags: common
 
     ##
     # Restart services
