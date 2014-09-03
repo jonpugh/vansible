@@ -6,27 +6,27 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Look for project settings file.
-  if !(File.exists?("settings.project.yml"))
+  if !(File.exists?(File.dirname(__FILE__) + "/settings.project.yml"))
     raise NoSettingsException
   end
 
   # Load the yml files
   require 'yaml'
-  settings = YAML.load_file('settings.global.yml')
-  settings.merge!(YAML.load_file('settings.project.yml'))
+  settings = YAML.load_file(File.dirname(__FILE__) + "/settings.global.yml")
+  settings.merge!(YAML.load_file(File.dirname(__FILE__) + "/settings.project.yml"))
 
   # Clone project repo to `./src` if the folder doesn't exist yet, and the setting exists.
-  if !(File.directory?("src"))
+  if !(File.directory?(File.dirname(__FILE__) + "/src"))
 
     # If a project_repo is set, clone it.
     if settings['project_repo']
-      system("git clone #{settings['project_repo']} src")
+      system("git clone #{settings['project_repo']} #{File.dirname(__FILE__)}/src")
     # otherwise, create the src directory so we can share it to the guest.
     else
-      system("mkdir src");
+      system("mkdir #{File.dirname(__FILE__)}/src");
     end
 
-    if !(File.directory?("src"))
+    if !(File.directory?(File.dirname(__FILE__) + "/src"))
       raise NoSrcException
     end
   end
@@ -48,7 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      raise NoSshKeyException
   end
   ssh_public_key = IO.read("#{Dir.home}/.ssh/id_rsa.pub").strip!
-  
+
   # ONLY WORKS if ansible is setup on the HOST machine.
   # See https://github.com/mitchellh/vagrant/issues/2103
   # @TODO: Uncomment once vagrant supports this.
