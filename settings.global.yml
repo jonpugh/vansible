@@ -5,7 +5,7 @@
 ---
 # Vansible settings
 vansible_tags: 'common,drush'
-vansible_ip: '10.10.10.10'
+vansible_ip: '1.2.3.4'
 vansible_playbook: 'provision.yml'
 vansible_memory: '2048'
 vansible_adapter: 'wlan0'
