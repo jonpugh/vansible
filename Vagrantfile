@@ -79,6 +79,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     owner: "vagrant", group: "www-data"
 
   # Save a local alias for this project.
+  if (!File.exists?("#{Dir.home}/.drush"))
+    Dir.mkdir("#{Dir.home}/.drush")
+  end
+
   DRUSH_ALIAS_FILE = "#{Dir.home}/.drush/#{settings['project']}.alias.drushrc.php"
   if (!File.exists?(DRUSH_ALIAS_FILE))
     # @TODO: Is is possible to load this from the ansible template?
