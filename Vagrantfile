@@ -76,7 +76,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Sync project folder to guest machine.
   config.vm.synced_folder "src/#{settings['path_to_drupal']}", "/var/www",
-    owner: "vagrant", group: "www-data"
+    owner: "www-data", group: "www-data"
 
   # Save a local alias for this project.
   if (!File.exists?("#{Dir.home}/.drush"))
