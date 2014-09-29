@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Sets IP of the guest machine and allows it to connect to the internet.
   # @TODO: Add the adapter to settings.global.yml. Almost always wlan0
   config.vm.network :private_network, ip:  settings['vansible_ip']
-  config.vm.network :public_network, bridge: settings['vansible_adapter']
+  #config.vm.network :public_network, bridge: settings['vansible_adapter']
 
   # Sync .ssh folder to guest machine.
   config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"

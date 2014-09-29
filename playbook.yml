@@ -69,7 +69,7 @@
     # Apache2 setup.
     #
     - name: Apache | Enable some required modules
-      action: command a2enmod rewrite vhost_alias
+      action: command a2enmod rewrite vhost_alias ssl
       tags: common
 
     - name: Apache | Configuration file for our site
