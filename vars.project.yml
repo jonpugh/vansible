@@ -1,0 +1,22 @@
+##
+# Settings for this project.
+#
+
+##
+# This file must be copied to settings.project.yml.
+# You can use this file to override any other settings in settings.global.yml
+#
+
+---
+project: engage
+project_repo:  engageny2@svn-3224.prod.hosting.acquia.com:engageny2.git
+install_profile: engage2
+server_hostname: engage
+
+ip: 11.11.11.11
+
+# If your project is from Acquia, path_to_drupal would be "docroot"
+path_to_drupal: docroot
+
+# An example of an overridden setting. Uncomment to override the defaults in settings.global.yml
+php_memory_limit: '512M'
