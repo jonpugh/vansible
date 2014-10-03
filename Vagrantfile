@@ -36,9 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = vars['server_hostname']
 
   # Sets IP of the guest machine and allows it to connect to the internet.
-  # @TODO: Add the adapter to vars.global.yml. Almost always wlan0
   config.vm.network :private_network, ip:  vars['vansible_ip']
-  #config.vm.network :public_network, bridge: vars['vansible_adapter']
 
   # Sync .ssh folder to guest machine.
   config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"
@@ -54,21 +52,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # @TODO: Uncomment once vagrant supports this.
    config.vm.provision "ansible" do |ansible|
      ansible.playbook = vars['vansible_playbook']
-     ansible.tags = vars['vansible_tags']
      ansible.extra_vars = {
        ansible_ssh_user: 'vagrant',
        authorized_keys: ssh_public_key
      }
      ansible.sudo = true
    end
-
-  # Setup ansible and run the playbook.
-  # @TODO: Remove once vagrant supports ansible on guest.
-  # config.vm.provision "shell", path: "tasks/setup-ansible.sh"
-
-  # Run ansible Provisioner via shell.
-  #config.vm.provision "shell",
-  #    inline: "cd /vagrant; ansible-playbook -c local  -i '#{vars['server_hostname']},' --tags='#{vars['vansible_tags']}' #{vars['vansible_playbook']} --extra-vars 'authorized_keys=\"#{ssh_public_key}\"'"
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", vars['vansible_memory']]
