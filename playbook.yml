@@ -16,21 +16,8 @@
     #
     - name: Packages | Install required packages.
       apt: pkg={{ item }} state=installed  update_cache=yes
-      with_items:
-        - php5
-        - apache2
-        - mysql-server
-        - mysql-client
-        - php5-mysql
-        - php-apc
-        - php5-xmlrpc
-        - php5-curl
-        - php5-gd
-        - sendmail
-        - unzip
-        - python-mysqldb
-        - vim
-        - solr-tomcat
+      with_items: packages
+
 
     ##
     # Set Hostname
