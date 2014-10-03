@@ -33,6 +33,11 @@ This repo is designed to be cloned for each Drupal site you are working on.
 To start a new project:
 
 0. Install Git, Vagrant, and VirtualBox (or another provider like VMware).
+0.1. Install the vagrant-hosts plugin:
+  ```
+  vagrant plugin install vagrant-hosts
+  ```
+
 1. Clone this repo to a folder named after the project.
 
     ```
