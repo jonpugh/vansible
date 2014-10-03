@@ -74,6 +74,8 @@
 
     - name: Setup | Install Drush
       shell: composer global require drush/drush:6.* -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
+      args:
+        creates: /usr/share/composer/vendor/bin/drush
 
     - name: Setup | Add composer bin to path
       command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' /etc/bash.bashrc
@@ -97,15 +99,6 @@
 
     - name: SSH Keys | Save authorized_keys for local user to vagrant user
       authorized_key: user=vagrant key="{{ authorized_keys }}"
-
-    # Copy host machines SSH keys to guest
-#    - name: SSH Keys | Copy private key from Host to Guest
-#      copy: src=/home/vagrant/.ssh_host/id_rsa dest=/home/vagrant/.ssh/id_rsa owner=vagrant group=vagrant mode=0600
-#      tags: common
-#
-#    - name: SSH Keys | Copy public key from Host to Guest
-#      copy: src=/home/vagrant/.ssh_host/id_rsa.pub dest=/home/vagrant/.ssh/id_rsa.pub owner=vagrant group=vagrant mode=0600
-#      tags: common
 
     ##
     # Restart services

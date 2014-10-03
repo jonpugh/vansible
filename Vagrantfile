@@ -37,9 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Sets IP of the guest machine and allows it to connect to the internet.
   config.vm.network :private_network, ip:  vars['vansible_ip']
-
-  # Sync .ssh folder to guest machine.
-  config.vm.synced_folder "#{Dir.home}/.ssh", "/home/vagrant/.ssh_host"
+  config.ssh.forward_agent = true
 
   # Read this user's host machine's public ssh key to pass to ansible.
   if !(File.exists?("#{Dir.home}/.ssh/id_rsa.pub"))
@@ -89,7 +87,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puts "Drush alias created. You may access your site with `drush @#{vars['project']}`"
     end
   end
-
 end
 
 ##
