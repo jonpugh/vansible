@@ -15,8 +15,7 @@
     # Apt package installation of required software.
     #
     - name: Packages | Install required packages.
-      action: apt pkg={{ item }} state=installed  update_cache=yes
-      tags: common
+      apt: pkg={{ item }} state=installed  update_cache=yes
       with_items:
         - php5
         - apache2
@@ -42,59 +41,62 @@
     # Message of the day explaining server is under control of Ansible.
     #
     - name: General | Setting message of the day.
-      action: template src=templates/motd.j2 dest=/etc/update-motd.d/95-ansible mode=755
-      tags: common
+      template:
+        src=templates/motd.j2
+        dest=/etc/update-motd.d/95-ansible
+        mode=755
 
     ##
     # PHP Setup.
     #
     - name: PHP | Configuration file, php.ini
-      action: template src=templates/etc-php5-apache2-php-ini.j2 dest=/etc/php5/apache2/php.ini
-      tags: common
+      template:
+        src=templates/etc-php5-apache2-php-ini.j2
+        dest=/etc/php5/apache2/php.ini
 
     - name: APC | Cache configuration file, apc.ini
-      action: template src=templates/etc-php5-conf-d-apc-ini.j2 dest=/etc/php5/conf.d/apc.ini
-      tags: common
+      template:
+        src=templates/etc-php5-conf-d-apc-ini.j2
+        dest=/etc/php5/conf.d/apc.ini
 
     ##
     # MySQL database setup.
     #
     - name: MySQL | Configuration file, my.cnf
-      action: template src=templates/etc-mysql-my-cnf.j2 dest=/etc/mysql/my.cnf
-      tags: common
+      template:
+        src=templates/etc-mysql-my-cnf.j2
+        dest=/etc/mysql/my.cnf
 
-    - include: ./tasks/mysql-secure.yml
+    - name: MySQL | Check if MySQL was secured.
+      stat: path=/var/mysql-secured
+      register: mysqlsecured
+
+    - name: Install MySQL Securely
+      include: ./tasks/mysql-secure.yml
+      when: not mysqlsecured.stat.exists
 
     ##
     # Apache2 setup.
     #
     - name: Apache | Enable some required modules
-      action: command a2enmod rewrite vhost_alias ssl
-      tags: common
+      command: a2enmod rewrite vhost_alias ssl
 
     - name: Apache | Configuration file for our site
-      action: template src=templates/etc-apache2-sites-available-devserver.j2 dest=/etc/apache2/sites-available/devserver
-      tags: common
+      template:
+        src=templates/etc-apache2-sites-available-devserver.j2
+        dest=/etc/apache2/sites-available/devserver
 
     - name: Apache | Disable the default site
-      action: command a2dissite default
-      tags: common
+      command: a2dissite default
 
     - name: Apache | Enable our new site
-      action: command a2ensite devserver
-      tags: common
+      command: a2ensite devserver
 
-    ##
-    # Drush install, a Drupal shell tool.
-    #
-    - include: tasks/ubuntu-drush.yml
+    - name: Drush | Install Drush
+      include: tasks/ubuntu-drush.yml
 
-    ##
-    # Save authorized key from Vagrant Host's id_rsa.pub:
-    #
-    - name: SSH Keys | Save authorized_keys
+    - name: SSH Keys | Save authorized_keys for local user to vagrant user
       authorized_key: user=vagrant key="{{ authorized_keys }}"
-      tags: common
 
     # Copy host machines SSH keys to guest
 #    - name: SSH Keys | Copy private key from Host to Guest
@@ -109,39 +111,51 @@
     # Restart services
     #
     - name: Restart Apache
-      action: service name=apache2 state=restarted
-      tags: common
+      service:
+        name=apache2
+        state=restarted
 
     - name: Restart MySQL
-      action: service name=mysql state=restarted
-      tags: common
+      service:
+        name=mysql
+        state=restarted
 
     ##
     # Final Drupal Configuraiton
     #
-    - name: Create database user
-      action: mysql_user user={{ project }} password={{ project }} priv=*.*:ALL,GRANT state=present
-      tags: common
+    - name: Drupal | Create database user
+      mysql_user:
+        user={{ project }}
+        password={{ project }}
+        priv=*.*:ALL,GRANT
+        state=present
 
-    - name: Create database
-      action: mysql_db db={{ project }} state=present
-      tags: common
+    - name: Drupal | Create database
+      mysql_db:
+        db={{ project }}
+        state=present
 
     - name: Drupal | Configuration folder, sites/{{ server_hostname }}
-      action: file path=/var/www/sites/{{ server_hostname }} state=directory
-      tags: common
+      file:
+        path=/var/www/sites/{{ server_hostname }}
+        state=directory
 
     - name: Drupal | Configuration file, settings.php
-      action: template src=templates/settings-php.j2 dest=/var/www/sites/{{ server_hostname }}/settings.php
-      tags: common
+      template:
+        src=templates/settings-php.j2
+        dest=/var/www/sites/{{ server_hostname }}/settings.php
 
     - name: Drush | Create .drush folder
-      tags: common
-      action: file path=/home/vagrant/.drush owner=vagrant group=vagrant state=directory
+      file:
+        path=/home/vagrant/.drush
+        owner=vagrant
+        group=vagrant
+        state=directory
 
-    - name: Drush | Create site alias
-      action: template src=templates/drush-alias-drushrc-php.j2 dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
-      tags: common
+    - name: Drush | Create site alias on host.
+      template:
+        src=templates/drush-alias-drushrc-php.j2
+        dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
 
     ###
     # @TODO: Create a server wide site alias.
