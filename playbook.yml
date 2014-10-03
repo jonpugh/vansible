@@ -113,12 +113,12 @@
     - name: Restart Apache
       service:
         name=apache2
-        state=restarted
+        state=started
 
     - name: Restart MySQL
       service:
         name=mysql
-        state=restarted
+        state=started
 
     ##
     # Final Drupal Configuraiton
@@ -152,10 +152,16 @@
         group=vagrant
         state=directory
 
-    - name: Drush | Create site alias on host.
+    - name: Drush | Create site alias on guest.
       template:
         src=templates/drush-alias-drushrc-php.j2
         dest=/home/vagrant/.drush/{{ project }}.alias.drushrc.php
+
+
+    - name: Drush | Create drushrc file on guest.
+      template:
+        src=templates/drushrc-php.j2
+        dest=/home/vagrant/.drush/drushrc.php
 
     ###
     # @TODO: Create a server wide site alias.
