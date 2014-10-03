@@ -22,7 +22,7 @@ There are a number of tricks this Vagrantfile uses to streamline setup and devel
 1. Uses your computer's SSH public/private key pair, removing the need to generate and send out your VM's SSH keys, and granting ssh access to the host automatically.
 2. Uses project-specific YAML file to define settings for your project.  Simply add a name and git url to get started. Add settings overrides as needed here.
 3. Automatically clones the project repo as defined in `settings.project.yml` on first `vagrant up`.
-4. Vagrant handles saving the IP and domain name to your `/etc/hosts` file automatically.
+4. Vagrant handles saving the IP and domain name to your `/etc/hosts` file automatically if you install the `vagrant-hostsupdater` plugin.
 5. Creates drush aliases for the site in the guest machine and *on the host* for easy access.
 
 
@@ -35,8 +35,10 @@ To start a new project:
 0. Install Git, Vagrant, and VirtualBox (or another provider like VMware).
 0.1. Install the vagrant-hosts plugin:
   ```
-  vagrant plugin install vagrant-hosts
+  vagrant plugin install vagrant-hostsupdater
   ```
+  
+0.2. Install Ansible: http://docs.ansible.com/intro_installation.html
 
 1. Clone this repo to a folder named after the project.
 
@@ -47,12 +49,12 @@ To start a new project:
 
     ```
     $ cd projectname
-    $ cp settings.project.example.yml settings.project.yml
-    $ vim settings.project.yml
+    $ cp vars.project.example.yml vars.project.yml
+    $ vim vars.project.yml
     ```
 
     Put your project's name and the URL of your project's git repository in
-    `settings.project.yml`.
+    `vars.project.yml`.
 
 3. Vagrant up.
 
