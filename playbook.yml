@@ -75,6 +75,22 @@
       include: ./tasks/mysql-secure.yml
       when: not mysqlsecured.stat.exists
 
+    - name: Setup | Install Composer
+      shell: curl -sS https://getcomposer.org/installer | php;  mv composer.phar /usr/local/bin/composer
+      args:
+        creates: /usr/local/bin/composer
+
+    - name: Setup | Prepare composer directory
+      file:
+        path=/usr/share/composer
+        state=directory
+
+    - name: Setup | Install Drush
+      shell: composer global require drush/drush:6.* -d /usr/share/composer; /usr/share/composer/vendor/bin/drush
+
+    - name: Setup | Add composer bin to path
+      command: sed -i '1i export PATH="/usr/share/composer/vendor/bin:$PATH"' /etc/bash.bashrc
+
     ##
     # Apache2 setup.
     #
@@ -91,9 +107,6 @@
 
     - name: Apache | Enable our new site
       command: a2ensite devserver
-
-    - name: Drush | Install Drush
-      include: tasks/ubuntu-drush.yml
 
     - name: SSH Keys | Save authorized_keys for local user to vagrant user
       authorized_key: user=vagrant key="{{ authorized_keys }}"
