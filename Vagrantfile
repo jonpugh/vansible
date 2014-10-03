@@ -5,6 +5,13 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
+  # Check to see if there's an SSH agent running with keys.
+  `ssh-add -l`
+
+  if not $?.success?
+    raise NoSSHException
+  end
+
   # Look for project variables file.
   if !(File.exists?(File.dirname(__FILE__) + "/vars.project.yml"))
     raise NoVarsException
@@ -87,6 +94,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puts "Drush alias created. You may access your site with `drush @#{vars['project']}`"
     end
   end
+
+  # Make sure files folder is writable
+   system("chmod a+w #{File.dirname(__FILE__)}/src/#{vars['path_to_drupal']}/sites/default/files")
+
 end
 
 ##
@@ -102,4 +113,12 @@ end
 
 class NoSshKeyException < Vagrant::Errors::VagrantError
   error_message('An ssh public key could not be found at ~/.ssh/id_rsa.pub. Please generate one and try again.')
+end
+
+class NoSSHException < Vagrant::Errors::VagrantError
+  error_message('Your SSH does not currently contain any keys (or is stopped.)')
+  error_message('If you are on a Mac, add a passphrase to your SSH key by running:')
+  error_message('  $ ssh-keygen -p -f ~/.ssh/id_rsa')
+  error_message('  $ eval $(ssh-agent)')
+  error_message('  $ ssh-add')
 end
