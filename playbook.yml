@@ -138,6 +138,11 @@
         src=templates/settings-php.j2
         dest=/var/www/sites/{{ server_hostname }}/settings.php
 
+    - name: Drupal | Create files folder
+      file:
+        path=/var/www/sites/default/files
+        state=directory
+
     - name: Drush | Create .drush folder
       file:
         path=/home/vagrant/.drush
