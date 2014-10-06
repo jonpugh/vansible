@@ -90,6 +90,8 @@
       template:
         src=templates/etc-apache2-sites-available-devserver.j2
         dest=/etc/apache2/sites-available/devserver
+      notify:
+        - restart apache
 
     - name: Apache | Disable the default site
       command: a2dissite default
@@ -174,3 +176,10 @@
 #      chdir: /var/www/sites/{{ server_hostname }}
 #      creates: /var/site-installed
 #      tags: common
+
+
+  handlers:
+    - name: restart apache
+      service: >
+        name=apache2
+        state=restarted
