@@ -5,13 +5,6 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Check to see if there's an SSH agent running with keys.
-  `ssh-add -l`
-
-  if not $?.success?
-    raise NoSSHException
-  end
-
   # Look for project variables file.
   if !(File.exists?(File.dirname(__FILE__) + "/vars.project.yml"))
     raise NoVarsException
