@@ -38,14 +38,12 @@ To start a new project:
   vagrant plugin install vagrant-hostsupdater
   ```
   
-0.2. Install Ansible: http://docs.ansible.com/intro_installation.html
-
 1. Clone this repo to a folder named after the project.
 
     ```
     $ git clone git@github.com:jonpugh/vansible.git projectname
     ```
-2. Copy and edit settings.project.yml.
+2. Copy and edit vars.project.yml.
 
     ```
     $ cd projectname
@@ -55,6 +53,12 @@ To start a new project:
 
     Put your project's name and the URL of your project's git repository in
     `vars.project.yml`.
+
+3. Start your SSH Agent:
+
+    ```
+    $ ssh-add
+    ```
 
 3. Vagrant up.
 
