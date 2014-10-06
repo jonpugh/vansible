@@ -48,7 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # If ansible is installed on the host, we can use config.vm.provision.
   # If it is not, we use shell provisioner to run
   # See https://github.com/mitchellh/vagrant/issues/2103
-  has_ansible = `which ansibles`.to_s.strip.length != 0
+  has_ansible = `which ansible`.to_s.strip.length != 0
   if has_ansible
     config.vm.provision "ansible" do |ansible|
       ansible.playbook = vars['vansible_playbook']
